@@ -15,6 +15,8 @@ public class Curso {
 	private String nome;
 	
 	private String categoria;
+	
+	public Curso() {}
 
 	public Curso(String nome, String categoria) {
 		this.nome = nome;
