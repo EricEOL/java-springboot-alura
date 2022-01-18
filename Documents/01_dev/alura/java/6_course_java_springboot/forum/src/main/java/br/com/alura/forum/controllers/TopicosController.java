@@ -1,14 +1,12 @@
 package br.com.alura.forum.controllers;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.alura.forum.controllers.DTO.TopicoDTO;
-import br.com.alura.forum.models.Curso;
 import br.com.alura.forum.models.Topico;
 import br.com.alura.forum.repositories.TopicoRepository;
 
@@ -18,12 +16,18 @@ public class TopicosController {
 	@Autowired
 	private TopicoRepository topicoRepository;
 
-	@RequestMapping("/topicos")
-	public List<TopicoDTO> listar() {
+	@GetMapping("/topicos")
+	public List<TopicoDTO> listar(String curso) {
 		
-		List<Topico> topicos = topicoRepository.findAll();
-		
-		return TopicoDTO.converter(topicos);
+		if(curso == null) {
+			List<Topico> topicos = topicoRepository.findAll();
+			
+			return TopicoDTO.converter(topicos);
+		} else {
+			List<Topico> topicos = topicoRepository.findByCursoNome(curso);
+			
+			return TopicoDTO.converter(topicos);
+		}
 
 	}
 
