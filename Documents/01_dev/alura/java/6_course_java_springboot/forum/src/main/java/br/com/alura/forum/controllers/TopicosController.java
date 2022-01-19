@@ -48,8 +48,6 @@ public class TopicosController {
 
 	@PostMapping
 	public ResponseEntity<TopicoDTO> cadastrar(@RequestBody @Valid TopicoForm form, UriComponentsBuilder uriBuilder) {
-
-		
 		
 		Topico topico = form.converter(cursoRepository);
 
