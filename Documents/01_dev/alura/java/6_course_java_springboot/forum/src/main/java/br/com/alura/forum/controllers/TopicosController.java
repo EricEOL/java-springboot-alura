@@ -62,6 +62,7 @@ public class TopicosController {
 	}
 
 	@PostMapping
+	@Transactional
 	public ResponseEntity<TopicoDTO> cadastrar(@RequestBody @Valid TopicoForm form, UriComponentsBuilder uriBuilder) {
 		
 		Topico topico = form.converter(cursoRepository);
@@ -81,6 +82,13 @@ public class TopicosController {
 
 		return ResponseEntity.ok(new TopicoDTO(topico));
 	}
-
-
+	
+	@DeleteMapping("/{id}")
+	@Transactional
+	public ResponseEntity<?> remover(@PathVariable Long id) {
+		
+		topicoRepository.deleteById(id);
+		
+		return ResponseEntity.ok().build();
+	}
 }
