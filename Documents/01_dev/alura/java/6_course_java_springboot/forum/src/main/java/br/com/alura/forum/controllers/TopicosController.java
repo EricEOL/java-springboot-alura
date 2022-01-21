@@ -8,6 +8,9 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,14 +42,19 @@ public class TopicosController {
 	private CursoRepository cursoRepository;
 
 	@GetMapping
-	public List<TopicoDTO> listar(@RequestParam(required = false) String curso) {
+	public Page<TopicoDTO> listar(
+			@RequestParam(required = false) String curso, 
+			@RequestParam int page, 
+			@RequestParam int qtd ) {
 
+		PageRequest pageable = PageRequest.of(page, qtd);
+		
 		if (curso == null) {
-			List<Topico> topicos = topicoRepository.findAll();
+			Page<Topico> topicos = topicoRepository.findAll(pageable);
 
 			return TopicoDTO.converter(topicos);
 		} else {
-			List<Topico> topicos = topicoRepository.findByCursoNome(curso);
+			Page<Topico> topicos = topicoRepository.findByCursoNome(curso, pageable);
 
 			return TopicoDTO.converter(topicos);
 		}
