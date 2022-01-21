@@ -2,6 +2,7 @@ package br.com.alura.forum.controllers;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
@@ -38,7 +39,7 @@ public class TopicosController {
 	private CursoRepository cursoRepository;
 
 	@GetMapping
-	public List<TopicoDTO> listar(@RequestParam String curso) {
+	public List<TopicoDTO> listar(@RequestParam(required = false) String curso) {
 
 		if (curso == null) {
 			List<Topico> topicos = topicoRepository.findAll();
@@ -53,12 +54,15 @@ public class TopicosController {
 	}
 	
 	@GetMapping("/{id}")
-	public DetailsTopicoDTO detalhar(@PathVariable Long id) {
+	public ResponseEntity<DetailsTopicoDTO> detalhar(@PathVariable Long id) {
 		
-		Topico topico = topicoRepository.getById(id);
+		Optional<Topico> topico = topicoRepository.findById(id);
 		
-		return new DetailsTopicoDTO(topico);
+		if(topico.isPresent()) {
+			return ResponseEntity.ok(new DetailsTopicoDTO(topico.get()));
+		}
 		
+		return ResponseEntity.notFound().build();
 	}
 
 	@PostMapping
@@ -78,17 +82,27 @@ public class TopicosController {
 	@Transactional
 	public ResponseEntity<TopicoDTO> atualizar(@PathVariable Long id, @RequestBody @Valid AttTopicoForm form) {
 		
-		Topico topico = form.atualizar(id, topicoRepository);
-
-		return ResponseEntity.ok(new TopicoDTO(topico));
+		Optional<Topico> optional = topicoRepository.findById(id);
+		
+		if(optional.isPresent()) {
+			Topico topico = form.atualizar(id, topicoRepository);
+			return ResponseEntity.ok(new TopicoDTO(topico));
+		}
+		
+		return ResponseEntity.notFound().build();
 	}
 	
 	@DeleteMapping("/{id}")
 	@Transactional
 	public ResponseEntity<?> remover(@PathVariable Long id) {
 		
-		topicoRepository.deleteById(id);
+		Optional<Topico> optional = topicoRepository.findById(id);
 		
-		return ResponseEntity.ok().build();
+		if(optional.isPresent()) {
+			topicoRepository.deleteById(id);
+			return ResponseEntity.ok().build();
+		}
+		
+		return ResponseEntity.notFound().build();
 	}
 }
